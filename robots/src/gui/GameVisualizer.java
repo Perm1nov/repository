@@ -1,6 +1,6 @@
 package gui;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -11,23 +11,16 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
-
 import gui.Robot;
-import log.Logger;
 
 public class GameVisualizer extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private int count = 0;
-	private static String modeFlag = "rectangle";
+	private static String modeFlag = "";
 
 	public static void setFlag(String str) {
 		modeFlag = str;
@@ -46,14 +39,22 @@ public class GameVisualizer extends JPanel {
 		m_rbts.add(obj);
 	}
 
+	{
+		m_rbtsSet(new Robot("BFS"));
+	}
+
 	private static Timer initTimer() {
 		Timer timer = new Timer("events generator", true);
 		return timer;
 	}
 
-	private volatile int m_targetPositionX;
-	private volatile int m_targetPositionY;
-	private volatile Point m_targetPositionPoint;
+	Robot currentRobot = m_rbts.get(0);
+
+	volatile static Point m_targetPositionPoint;
+
+	public static Point getTargetPoint() {
+		return m_targetPositionPoint;
+	}
 
 	int x0;
 	int y0;
@@ -79,30 +80,34 @@ public class GameVisualizer extends JPanel {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+
+				for (Robot robot : m_rbts) {
+					if (e.getButton() == MouseEvent.BUTTON2 && ((Math.pow(e.getX() - round(robot.robotX), 2) / 30 * 30
+							+ Math.pow(e.getY() - round(robot.robotY), 2)) / 10 * 10) <= 300) {
+						currentRobot = robot;
+						break;
+					}
+				}
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					setTargetPosition(e.getPoint());
+					setTargetPosition(e.getPoint(), currentRobot);
 					if (!m_rcts.isEmpty()) {
 						for (Robot r : m_rbts) {
-							BFS(r);
-							try {
-								r.temp = r.m_way.pop();
-							} catch (Exception ex) {
-								throw new EmptyStackException();
-							}
+							r.BFS();
 						}
 					}
 				} else if (modeFlag == "remove")
 					removeRectangle(e.getPoint(), m_rcts);
-				else if (count == 0) {
-					x0 = e.getPoint().x;
-					y0 = e.getPoint().y;
-					count++;
-				} else {
-					x1 = e.getPoint().x;
-					y1 = e.getPoint().y;
-					count = 0;
-					m_rctsSet(new Rectangle(x0, y0, x1, y1));
-				}
+				else if (modeFlag == "rectangle")
+					if (count == 0) {
+						x0 = e.getPoint().x;
+						y0 = e.getPoint().y;
+						count++;
+					} else {
+						x1 = e.getPoint().x;
+						y1 = e.getPoint().y;
+						count = 0;
+						m_rctsSet(new Rectangle(x0, y0, x1, y1));
+					}
 
 				repaint();
 			}
@@ -111,9 +116,9 @@ public class GameVisualizer extends JPanel {
 
 	}
 
-	protected void setTargetPosition(Point p) {
-		m_targetPositionX = p.x;
-		m_targetPositionY = p.y;
+	protected void setTargetPosition(Point p, Robot r) {
+		r.m_targetPositionX = p.x;
+		r.m_targetPositionY = p.y;
 		m_targetPositionPoint = p;
 	}
 
@@ -121,7 +126,7 @@ public class GameVisualizer extends JPanel {
 		EventQueue.invokeLater(this::repaint);
 	}
 
-	private static double distance(double x1, double y1, double x2, double y2) {
+	static double distance(double x1, double y1, double x2, double y2) {
 		double diffX = x1 - x2;
 		double diffY = y1 - y2;
 		return Math.sqrt(diffX * diffX + diffY * diffY);
@@ -146,12 +151,12 @@ public class GameVisualizer extends JPanel {
 				return;
 			}
 		}
-		double distance = distance(m_targetPositionX, m_targetPositionY, robot.robotX, robot.robotY);
+		double distance = distance(robot.m_targetPositionX, robot.m_targetPositionY, robot.robotX, robot.robotY);
 		if (distance < 1) {
 			return;
 		}
 		double velocity = robot.maxVelocity;
-		double angleToTarget = angleTo(robot.robotX, robot.robotY, m_targetPositionX, m_targetPositionY);
+		double angleToTarget = angleTo(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY);
 		double angularVelocity = 0;
 		if (angleToTarget > robot.m_robotDirection) {
 			angularVelocity = robot.maxAngularVelocity;
@@ -160,18 +165,21 @@ public class GameVisualizer extends JPanel {
 			angularVelocity = -robot.maxAngularVelocity;
 		}
 
-		if ((robot.mode == "BFS") && (!isAble(robot.robotX, robot.robotY, m_targetPositionX, m_targetPositionY))) {
-			if ((robot.robotX <= robot.temp.x + 0.5 && robot.robotY <= robot.temp.y + 0.5)
-					&& (robot.robotX >= robot.temp.x - 0.5 && robot.robotY >= robot.temp.y - 0.5)
-					|| (robot.robotX >= robot.temp.x + 0.5 && robot.robotY >= robot.temp.y + 0.5)
-							&& (robot.robotX <= robot.temp.x - 0.5 && robot.robotY <= robot.temp.y - 0.5)) {
+		if ((robot.mode == "BFS")
+				&& (!isAble(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY))) {
+			if(robot.m_temp==null)
+				robot.m_temp = robot.m_way.pop();
+			if ((robot.robotX <= robot.m_temp.x + 0.5 && robot.robotY <= robot.m_temp.y + 0.5)
+					&& (robot.robotX >= robot.m_temp.x - 0.5 && robot.robotY >= robot.m_temp.y - 0.5)
+					|| (robot.robotX >= robot.m_temp.x + 0.5 && robot.robotY >= robot.m_temp.y + 0.5)
+							&& (robot.robotX <= robot.m_temp.x - 0.5 && robot.robotY <= robot.m_temp.y - 0.5)) {
 				try {
-					robot.temp = robot.m_way.pop();
+					robot.m_temp = robot.m_way.pop();
 				} catch (Exception e) {
 				}
 
 			}
-			BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.temp);
+			BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.m_temp);
 		} else
 			moveRobot(velocity, angularVelocity, 10, robot);
 	}
@@ -199,7 +207,7 @@ public class GameVisualizer extends JPanel {
 		}
 		robot.robotX = newX;
 		robot.robotY = newY;
-		double newDirection = angleTo(robot.robotX, robot.robotY, m_targetPositionX, m_targetPositionY);
+		double newDirection = angleTo(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY);
 		// asNormalizedRadians(robot.m_robotDirection + angularVelocity * duration);
 		robot.m_robotDirection = newDirection;
 	}
@@ -243,9 +251,9 @@ public class GameVisualizer extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		for (Robot r : m_rbts) {
 			drawRobot(g2d, r);
-
+			drawTarget(g2d, r.m_targetPositionX, r.m_targetPositionY);
 		}
-		drawTarget(g2d, m_targetPositionX, m_targetPositionY);
+
 		for (Rectangle rect : m_rcts) {
 			g.setColor(Color.BLACK);
 			g.fillRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
@@ -302,7 +310,7 @@ public class GameVisualizer extends JPanel {
 
 	}
 
-	private boolean isAble(double x, double y, double x1, double y1) {
+	static boolean isAble(double x, double y, double x1, double y1) {
 		Line2D line = new Line2D.Double(x, y, x1, y1);
 		for (Rectangle rect : m_rcts)
 			if (line.intersects(rect.xn, rect.yn, rect.w, rect.h))
@@ -310,66 +318,7 @@ public class GameVisualizer extends JPanel {
 		return true;
 	}
 
-	// просчитать и осорт
-	public List<Point> getMap() {
-		Rectangle temp;
-
-		if (m_rcts.isEmpty())
-			return null;
-		List<Point> p = new ArrayList<Point>();
-		for (int i = 0; i < m_rcts.size(); i++) {
-			temp = m_rcts.get(i);
-			p.add(temp.p0);
-			p.add(temp.p1);
-			p.add(temp.p2);
-			p.add(temp.p3);
-		}
-		p.add(m_targetPositionPoint);
-		return p;
-	}
-
-	public void BFS(Robot r) {
-		int temp = 0;
-		double max = Integer.MAX_VALUE;
-		List<Point> map = getMap();
-		for (int i = 0; i < map.size(); i++) {
-			double c = distance(map.get(i).x, map.get(i).y, r.robotX, r.robotY);
-			if (c < max) {
-				max = c;
-				temp = i;
-			}
-
-		}
-		Logger.debug(String.valueOf(temp));
-		int[] num = new int[map.size()];
-		int[] father = new int[map.size()];
-		num[temp] = 1;
-		father[temp] = -1;
-		Queue<Integer> q = new LinkedList<Integer>();
-		Stack<Point> st = new Stack<Point>();
-		int a = temp;
-		q.add(a);
-		while (!q.isEmpty()) {
-			int pn = q.remove();
-			for (int i = 0; i < num.length; i++) {
-				if (isAble(map.get(pn).x, map.get(pn).y, map.get(i).x, map.get(i).y) && (num[i] != 1)) {
-					num[i] = 1;
-					father[i] = pn;
-					q.add(i);
-
-				}
-			}
-		}
-		int y = map.size() - 1;
-		while ((y != a) && (father[y] != -1)) {
-			y = father[y];
-			st.push(map.get(y));
-		}
-		Logger.debug(String.valueOf(st));
-		r.m_way = st;
-	}
 }
-
 /********************************************************************************
-приоритет отрисовки????
+ * приоритет отрисовки????
  *********************************************************************************/

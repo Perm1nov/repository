@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Что починить: 1. Этот класс порождает утечку ресурсов (связанные слушатели????
- * оказываются удерживаемыми в памяти) 2. Этот класс хранит активные сообщения
- * лога, но в такой реализации он их лишь накапливает. Надо же, чтобы количество
- * сообщений в логе было ограничено величиной m_iQueueLength (т.е. реально нужна
- * очередь сообщений ограниченного размера)
+ * Что починить: 1. Этот класс порождает утечку ресурсов (связанные
+ * слушатели???? оказываются удерживаемыми в памяти) 2. Этот класс хранит
+ * активные сообщения лога, но в такой реализации он их лишь накапливает. Надо
+ * же, чтобы количество сообщений в логе было ограничено величиной
+ * m_iQueueLength (т.е. реально нужна очередь сообщений ограниченного размера)
  */
 public class LogWindowSource {
 
@@ -39,7 +39,7 @@ public class LogWindowSource {
 
 	public void append(LogLevel logLevel, String strMessage) {
 		LogEntry entry = new LogEntry(logLevel, strMessage);
-		if(m_messages.size()>m_iQueueLength)
+		if (m_messages.size() > m_iQueueLength)
 			m_messages.remove(0);
 		m_messages.add(entry);
 

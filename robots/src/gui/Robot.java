@@ -81,7 +81,6 @@ public class Robot {
 					num[i] = 1;
 					father[i] = pn;
 					q.add(i);
-
 				}
 			}
 		}

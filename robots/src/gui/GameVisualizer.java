@@ -97,7 +97,7 @@ public class GameVisualizer extends JPanel {
 					}
 				} else if (modeFlag == "remove")
 					removeRectangle(e.getPoint(), m_rcts);
-				else if (modeFlag == "rectangle")
+				else if ((modeFlag == "rectangle")&&(e.getButton() != MouseEvent.BUTTON2))
 					if (count == 0) {
 						x0 = e.getPoint().x;
 						y0 = e.getPoint().y;
@@ -166,9 +166,8 @@ public class GameVisualizer extends JPanel {
 		}
 
 		if ((robot.mode == "BFS")
-				&& (!isAble(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY))) {
-			if(robot.m_temp==null)
-				robot.m_temp = robot.m_way.pop();
+				&& (!isAble(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY))&&(robot.m_temp!=null)) {
+		
 			if ((robot.robotX <= robot.m_temp.x + 0.5 && robot.robotY <= robot.m_temp.y + 0.5)
 					&& (robot.robotX >= robot.m_temp.x - 0.5 && robot.robotY >= robot.m_temp.y - 0.5)
 					|| (robot.robotX >= robot.m_temp.x + 0.5 && robot.robotY >= robot.m_temp.y + 0.5)

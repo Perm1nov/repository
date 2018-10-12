@@ -37,8 +37,8 @@ public class MainApplicationFrame extends JFrame {
 
 		setContentPane(desktopPane);
 
-		LogWindow logWindow = createLogWindow();
-		addWindow(logWindow);
+	//	LogWindow logWindow = createLogWindow();
+		//addWindow(logWindow);
 
 		GameWindow gameWindow = new GameWindow();
 		gameWindow.setSize(400, 400);
@@ -48,7 +48,7 @@ public class MainApplicationFrame extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
-	protected LogWindow createLogWindow() {
+	/*protected LogWindow createLogWindow() {
 		LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
 		logWindow.setLocation(10, 10);
 		logWindow.setSize(300, 800);
@@ -56,7 +56,7 @@ public class MainApplicationFrame extends JFrame {
 		logWindow.pack();
 		Logger.debug("Протокол работает");
 		return logWindow;
-	}
+	}*/
 
 	protected void addWindow(JInternalFrame frame) {
 		desktopPane.add(frame);

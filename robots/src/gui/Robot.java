@@ -7,16 +7,41 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
-import log.Logger;
-
 public class Robot {
 
-	public volatile double robotX = 0;
-	public volatile double robotY = 0;
-	 volatile Point m_robotPoint;
+	private volatile double robotX = 0;
+
+	public double getRobotX() {
+		return robotX;
+	}
+
+	public void setRobotX(double newX) {
+		robotX = newX;
+	}
+
+	private volatile double robotY = 0;
+
+	public double getRobotY() {
+		return robotY;
+	}
+
+	public void setRobotY(double newY) {
+		robotY = newY;
+	}
+
 	public volatile double m_robotDirection = 500;
-	 volatile double maxVelocity = 0.09;
-	 volatile double maxAngularVelocity = 0.009;
+	private volatile double maxVelocity = 0.09;
+
+	public double getMaxVelocity() {
+		return maxVelocity;
+	}
+
+	private volatile double maxAngularVelocity = 0.009;
+
+	public double getmaxAngularVelocity() {
+		return maxAngularVelocity;
+	}
+
 	volatile int m_targetPositionX;
 	volatile int m_targetPositionY;
 
@@ -65,7 +90,6 @@ public class Robot {
 			}
 
 		}
-		Logger.debug(String.valueOf(temp));
 		int[] num = new int[map.size()];
 		int[] father = new int[map.size()];
 		num[temp] = 1;
@@ -89,9 +113,9 @@ public class Robot {
 			y = father[y];
 			st.push(map.get(y));
 		}
-		Logger.debug(String.valueOf(st));
 		m_way = st;
-		if(!st.isEmpty())
-		m_temp = m_way.pop();
+		if (!st.isEmpty())
+			m_temp = m_way.pop();
 	}
+
 }

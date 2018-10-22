@@ -20,7 +20,7 @@ public class GameVisualizer extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private int count = 0;
-	private static String modeFlag = "";
+	private static String modeFlag = "create";
 
 	public static void setFlag(String str) {
 		modeFlag = str;
@@ -82,8 +82,9 @@ public class GameVisualizer extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 
 				for (Robot robot : m_rbts) {
-					if (e.getButton() == MouseEvent.BUTTON2 && ((Math.pow(e.getX() - round(robot.robotX), 2) / 30 * 30
-							+ Math.pow(e.getY() - round(robot.robotY), 2)) / 10 * 10) <= 300) {
+					if (e.getButton() == MouseEvent.BUTTON2
+							&& ((Math.pow(e.getX() - round(robot.getRobotX()), 2) / 30 * 30
+									+ Math.pow(e.getY() - round(robot.getRobotY()), 2)) / 10 * 10) <= 300) {
 						currentRobot = robot;
 						break;
 					}
@@ -91,13 +92,11 @@ public class GameVisualizer extends JPanel {
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					setTargetPosition(e.getPoint(), currentRobot);
 					if (!m_rcts.isEmpty()) {
-						for (Robot r : m_rbts) {
-							r.BFS();
-						}
+						currentRobot.BFS();
 					}
 				} else if (modeFlag == "remove")
 					removeRectangle(e.getPoint(), m_rcts);
-				else if ((modeFlag == "rectangle")&&(e.getButton() != MouseEvent.BUTTON2))
+				else if ((modeFlag == "create") && (e.getButton() != MouseEvent.BUTTON2))
 					if (count == 0) {
 						x0 = e.getPoint().x;
 						y0 = e.getPoint().y;
@@ -108,7 +107,6 @@ public class GameVisualizer extends JPanel {
 						count = 0;
 						m_rctsSet(new Rectangle(x0, y0, x1, y1));
 					}
-
 				repaint();
 			}
 		});
@@ -144,34 +142,38 @@ public class GameVisualizer extends JPanel {
 			return;
 
 		for (Rectangle rect : m_rcts) {
-			if ((robot.robotX >= rect.getX()) && (robot.robotY >= rect.getY())
-					&& (robot.robotX <= rect.getX() + rect.getWidth())
-					&& (robot.robotY <= rect.getY() + rect.getHeight())) {
+			if ((robot.getRobotX() >= rect.getX()) && (robot.getRobotY() >= rect.getY())
+					&& (robot.getRobotX() <= rect.getX() + rect.getWidth())
+					&& (robot.getRobotY() <= rect.getY() + rect.getHeight())) {
 				robot.alive = false;
 				return;
 			}
 		}
-		double distance = distance(robot.m_targetPositionX, robot.m_targetPositionY, robot.robotX, robot.robotY);
+		double distance = distance(robot.m_targetPositionX, robot.m_targetPositionY, robot.getRobotX(),
+				robot.getRobotY());
 		if (distance < 1) {
 			return;
 		}
-		double velocity = robot.maxVelocity;
-		double angleToTarget = angleTo(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY);
+		double velocity = robot.getMaxVelocity();
+		double angleToTarget = angleTo(robot.getRobotX(), robot.getRobotY(), robot.m_targetPositionX,
+				robot.m_targetPositionY);
 		double angularVelocity = 0;
 		if (angleToTarget > robot.m_robotDirection) {
-			angularVelocity = robot.maxAngularVelocity;
+			angularVelocity = robot.getmaxAngularVelocity();
 		}
 		if (angleToTarget < robot.m_robotDirection) {
-			angularVelocity = -robot.maxAngularVelocity;
+			angularVelocity = -robot.getmaxAngularVelocity();
 		}
 
 		if ((robot.mode == "BFS")
-				&& (!isAble(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY))&&(robot.m_temp!=null)) {
-		
-			if ((robot.robotX <= robot.m_temp.x + 0.5 && robot.robotY <= robot.m_temp.y + 0.5)
-					&& (robot.robotX >= robot.m_temp.x - 0.5 && robot.robotY >= robot.m_temp.y - 0.5)
-					|| (robot.robotX >= robot.m_temp.x + 0.5 && robot.robotY >= robot.m_temp.y + 0.5)
-							&& (robot.robotX <= robot.m_temp.x - 0.5 && robot.robotY <= robot.m_temp.y - 0.5)) {
+				&& (!isAble(robot.getRobotX(), robot.getRobotY(), robot.m_targetPositionX, robot.m_targetPositionY))
+				&& (robot.m_temp != null)) {
+
+			if ((robot.getRobotX() <= robot.m_temp.x + 0.5 && robot.getRobotY() <= robot.m_temp.y + 0.5)
+					&& (robot.getRobotX() >= robot.m_temp.x - 0.5 && robot.getRobotY() >= robot.m_temp.y - 0.5)
+					|| (robot.getRobotX() >= robot.m_temp.x + 0.5 && robot.getRobotY() >= robot.m_temp.y + 0.5)
+							&& (robot.getRobotX() <= robot.m_temp.x - 0.5
+									&& robot.getRobotY() <= robot.m_temp.y - 0.5)) {
 				try {
 					robot.m_temp = robot.m_way.pop();
 				} catch (Exception e) {
@@ -192,41 +194,42 @@ public class GameVisualizer extends JPanel {
 	}
 
 	private void moveRobot(double velocity, double angularVelocity, double duration, Robot robot) {
-		velocity = applyLimits(velocity, 0, robot.maxVelocity);
-		angularVelocity = applyLimits(angularVelocity, -robot.maxAngularVelocity, robot.maxAngularVelocity);
-		double newX = robot.robotX + velocity / angularVelocity
+		velocity = applyLimits(velocity, 0, robot.getMaxVelocity());
+		angularVelocity = applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
+		double newX = robot.getRobotX() + velocity / angularVelocity
 				* (Math.sin(robot.m_robotDirection + angularVelocity * duration) - Math.sin(robot.m_robotDirection));
 		if (!Double.isFinite(newX)) {
-			newX = robot.robotX + velocity * duration * Math.cos(robot.m_robotDirection);
+			newX = robot.getRobotX() + velocity * duration * Math.cos(robot.m_robotDirection);
 		}
-		double newY = robot.robotY - velocity / angularVelocity
+		double newY = robot.getRobotY() - velocity / angularVelocity
 				* (Math.cos(robot.m_robotDirection + angularVelocity * duration) - Math.cos(robot.m_robotDirection));
 		if (!Double.isFinite(newY)) {
-			newY = robot.robotY + velocity * duration * Math.sin(robot.m_robotDirection);
+			newY = robot.getRobotY() + velocity * duration * Math.sin(robot.m_robotDirection);
 		}
-		robot.robotX = newX;
-		robot.robotY = newY;
-		double newDirection = angleTo(robot.robotX, robot.robotY, robot.m_targetPositionX, robot.m_targetPositionY);
+		robot.setRobotX(newX);
+		robot.setRobotY(newY);
+		double newDirection = angleTo(robot.getRobotX(), robot.getRobotY(), robot.m_targetPositionX,
+				robot.m_targetPositionY);
 		// asNormalizedRadians(robot.m_robotDirection + angularVelocity * duration);
 		robot.m_robotDirection = newDirection;
 	}
 
 	private void BFSMoveRobot(double velocity, double angularVelocity, double duration, Robot robot, Point temp) {
-		velocity = applyLimits(velocity, 0, robot.maxVelocity);
-		angularVelocity = applyLimits(angularVelocity, -robot.maxAngularVelocity, robot.maxAngularVelocity);
-		double newX = robot.robotX + velocity / angularVelocity
+		velocity = applyLimits(velocity, 0, robot.getMaxVelocity());
+		angularVelocity = applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
+		double newX = robot.getRobotX() + velocity / angularVelocity
 				* (Math.sin(robot.m_robotDirection + angularVelocity * duration) - Math.sin(robot.m_robotDirection));
 		if (!Double.isFinite(newX)) {
-			newX = robot.robotX + velocity * duration * Math.cos(robot.m_robotDirection);
+			newX = robot.getRobotX() + velocity * duration * Math.cos(robot.m_robotDirection);
 		}
-		double newY = robot.robotY - velocity / angularVelocity
+		double newY = robot.getRobotY() - velocity / angularVelocity
 				* (Math.cos(robot.m_robotDirection + angularVelocity * duration) - Math.cos(robot.m_robotDirection));
 		if (!Double.isFinite(newY)) {
-			newY = robot.robotY + velocity * duration * Math.sin(robot.m_robotDirection);
+			newY = robot.getRobotY() + velocity * duration * Math.sin(robot.m_robotDirection);
 		}
-		robot.robotX = newX;
-		robot.robotY = newY;
-		double newDirection = angleTo(robot.robotX, robot.robotY, temp.getX(), temp.getY());
+		robot.setRobotX(newX);
+		robot.setRobotY(newY);
+		double newDirection = angleTo(robot.getRobotX(), robot.getRobotY(), temp.getX(), temp.getY());
 		robot.m_robotDirection = newDirection;
 	}
 
@@ -268,8 +271,8 @@ public class GameVisualizer extends JPanel {
 	}
 
 	private void drawRobot(Graphics2D g, Robot robot) {
-		int robotCenterX = round(robot.robotX);
-		int robotCenterY = round(robot.robotY);
+		int robotCenterX = round(robot.getRobotX());
+		int robotCenterY = round(robot.getRobotY());
 		AffineTransform t = AffineTransform.getRotateInstance(robot.m_robotDirection, robotCenterX, robotCenterY);
 		g.setTransform(t);
 		g.setColor(Color.MAGENTA);

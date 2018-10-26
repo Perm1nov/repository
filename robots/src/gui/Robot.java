@@ -29,7 +29,16 @@ public class Robot {
 		robotY = newY;
 	}
 
-	public volatile double m_robotDirection = 500;
+	private volatile double m_robotDirection = 500;
+
+	public double getRobotDirection() {
+		return m_robotDirection;
+	}
+
+	public void setRobotDirection(double value) {
+		m_robotDirection = value;
+	}
+
 	private volatile double maxVelocity = 0.09;
 
 	public double getMaxVelocity() {
@@ -47,18 +56,32 @@ public class Robot {
 
 	volatile Stack<Point> m_way = new Stack<Point>();
 	protected volatile Point m_temp;
-	public boolean alive = true;
-	public String mode = "";
+	private boolean status = true;
+
+	public void setAlive(boolean status) {
+		if (status == false)
+			this.status = status;
+	}
+
+	public boolean getAlive() {
+		return status;
+	}
+
+	private String mode = "";
+
+	public String get_mode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
 
 	public Robot(String mode) {
 		setMode(mode);
 	}
 
 	public Robot() {
-	}
-
-	public void setMode(String mode) {
-		this.mode = mode;
 	}
 
 	public static List<Point> getMap() {

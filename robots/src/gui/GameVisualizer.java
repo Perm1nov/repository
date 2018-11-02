@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import gui.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -14,13 +13,19 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
-import gui.Robot;
+
+import gameObjects.Rectangle;
+import gameObjects.Robot;
 
 public class GameVisualizer extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private int count = 0;
 	private static String modeFlag = "create";
+	private int x0;
+	private int y0;
+	private int x1;
+	private int y1;
 
 	public static void setFlag(String str) {
 		modeFlag = str;
@@ -28,11 +33,12 @@ public class GameVisualizer extends JPanel {
 
 	private final Timer m_timer = initTimer();
 	private static ArrayList<Rectangle> m_rcts = new ArrayList<Rectangle>();
+
 	public static void m_rctsSet(Rectangle rectangle) {
 		m_rcts.add(rectangle);
 	}
-	public static ArrayList<Rectangle> getArrayRcts()
-	{
+
+	public static ArrayList<Rectangle> getArrayRcts() {
 		ArrayList<Rectangle> rects = m_rcts;
 		return rects;
 	}
@@ -59,11 +65,6 @@ public class GameVisualizer extends JPanel {
 	public static Point getTargetPoint() {
 		return m_targetPositionPoint;
 	}
-
-	private int x0;
-	private int y0;
-	private int x1;
-	private int y1;
 
 	public GameVisualizer() {
 		m_timer.schedule(new TimerTask() {
@@ -128,7 +129,7 @@ public class GameVisualizer extends JPanel {
 		EventQueue.invokeLater(this::repaint);
 	}
 
-	static double distance(double x1, double y1, double x2, double y2) {
+	public static double distance(double x1, double y1, double x2, double y2) {
 		double diffX = x1 - x2;
 		double diffY = y1 - y2;
 		return Math.sqrt(diffX * diffX + diffY * diffY);
@@ -169,16 +170,17 @@ public class GameVisualizer extends JPanel {
 			angularVelocity = -robot.getmaxAngularVelocity();
 		}
 
-		if ((robot.get_mode() == "BFS")
-				&& (!isAble(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(), robot.getM_targetPositionY()))
-				&& (robot.getNextPoint() != null)) {
+		if ((robot.get_mode() == "BFS") && (!isAble(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
+				robot.getM_targetPositionY())) && (robot.getNextPoint() != null)) {
 
 			if ((robot.getRobotX() <= robot.getNextPoint().x + 0.5 && robot.getRobotY() <= robot.getNextPoint().y + 0.5)
-					&& (robot.getRobotX() >= robot.getNextPoint().x - 0.5 && robot.getRobotY() >= robot.getNextPoint().y - 0.5)
-					|| (robot.getRobotX() >= robot.getNextPoint().x + 0.5 && robot.getRobotY() >= robot.getNextPoint().y + 0.5)
+					&& (robot.getRobotX() >= robot.getNextPoint().x - 0.5
+							&& robot.getRobotY() >= robot.getNextPoint().y - 0.5)
+					|| (robot.getRobotX() >= robot.getNextPoint().x + 0.5
+							&& robot.getRobotY() >= robot.getNextPoint().y + 0.5)
 							&& (robot.getRobotX() <= robot.getNextPoint().x - 0.5
 									&& robot.getRobotY() <= robot.getNextPoint().y - 0.5)) {
-					robot.setNextPoint();
+				robot.setNextPoint();
 			}
 			BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.getNextPoint());
 		} else
@@ -315,7 +317,7 @@ public class GameVisualizer extends JPanel {
 		return false;
 	}
 
-	static boolean isAble(double x, double y, double x1, double y1) {
+	public static boolean isAble(double x, double y, double x1, double y1) {
 		Line2D line = new Line2D.Double(x, y, x1, y1);
 		for (Rectangle rect : m_rcts)
 			if (line.intersects(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()))

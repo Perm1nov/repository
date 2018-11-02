@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import gameObjects.Robot;
 import log.Logger;
 
 public class WindowHelper extends JFrame {

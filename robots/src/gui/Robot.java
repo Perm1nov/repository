@@ -117,10 +117,10 @@ public class Robot {
 		List<Point> p = new ArrayList<Point>();
 		for (int i = 0; i < tempArray.size(); i++) {
 			temp = tempArray.get(i);
-			p.add(temp.p0);
-			p.add(temp.p1);
-			p.add(temp.p2);
-			p.add(temp.p3);
+			p.add(temp.getP0());
+			p.add(temp.getP1());
+			p.add(temp.getP2());
+			p.add(temp.getP3());
 		}
 		p.add(GameVisualizer.getTargetPoint());
 		return p;

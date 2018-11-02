@@ -318,7 +318,7 @@ public class GameVisualizer extends JPanel {
 	static boolean isAble(double x, double y, double x1, double y1) {
 		Line2D line = new Line2D.Double(x, y, x1, y1);
 		for (Rectangle rect : m_rcts)
-			if (line.intersects(rect.xn, rect.yn, rect.w, rect.h))
+			if (line.intersects(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()))
 				return false;
 		return true;
 	}

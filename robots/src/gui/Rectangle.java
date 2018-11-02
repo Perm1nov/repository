@@ -5,14 +5,30 @@ import java.awt.Point;
 public class Rectangle {
 	private float x0, y0; // координаты левого верхнего угла
 	private float x1, y1; // координаты второго угла (координаты положения мыши)
-	public int w;
-	public int h;
-	public int xn;
-	public int yn;
-	public Point p0;
-	public Point p1;
-	public Point p2;
-	public Point p3;
+	private int w;
+	private int h;
+	private int xn;
+	private int yn;
+	private Point p0;
+	public Point getP0()
+	{
+		return p0;
+	}
+	private Point p1;
+	public Point getP1()
+	{
+		return p1;
+	}
+	private Point p2;
+	public Point getP2()
+	{
+		return p2;
+	}
+	private Point p3;
+	public Point getP3()
+	{
+		return p3;
+	}
 
 	public Rectangle(int x0, int y0, int x1, int y1) {
 		this.x0 = x0;

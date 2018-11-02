@@ -51,11 +51,36 @@ public class Robot {
 		return maxAngularVelocity;
 	}
 
-	volatile int m_targetPositionX;
-	volatile int m_targetPositionY;
+	private volatile int m_targetPositionX;
 
-	volatile Stack<Point> m_way = new Stack<Point>();
-	protected volatile Point m_temp;
+	public int getM_targetPositionX() {
+		return m_targetPositionX;
+	}
+
+	public void setM_targetPositionX(int m_targetPositionX) {
+		this.m_targetPositionX = m_targetPositionX;
+	}
+
+	private volatile int m_targetPositionY;
+
+	public int getM_targetPositionY() {
+		return m_targetPositionY;
+	}
+
+	public void setM_targetPositionY(int m_targetPositionY) {
+		this.m_targetPositionY = m_targetPositionY;
+	}
+
+	private volatile Stack<Point> m_way = new Stack<Point>();
+	private Point m_temp;
+	public Point getNextPoint() {
+		return m_temp;
+	}
+
+	public void setNextPoint() {
+		m_temp = m_way.pop();
+	}
+
 	private boolean status = true;
 
 	public void setAlive(boolean status) {
@@ -86,12 +111,12 @@ public class Robot {
 
 	public static List<Point> getMap() {
 		Rectangle temp;
-
-		if (GameVisualizer.m_rcts.isEmpty())
+		ArrayList<Rectangle> tempArray = GameVisualizer.getArrayRcts();
+		if (tempArray.isEmpty())
 			return null;
 		List<Point> p = new ArrayList<Point>();
-		for (int i = 0; i < GameVisualizer.m_rcts.size(); i++) {
-			temp = GameVisualizer.m_rcts.get(i);
+		for (int i = 0; i < tempArray.size(); i++) {
+			temp = tempArray.get(i);
 			p.add(temp.p0);
 			p.add(temp.p1);
 			p.add(temp.p2);
@@ -138,7 +163,7 @@ public class Robot {
 		}
 		m_way = st;
 		if (!st.isEmpty())
-			m_temp = m_way.pop();
+			m_temp = st.pop();
 	}
 
 }

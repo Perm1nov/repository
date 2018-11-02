@@ -27,10 +27,14 @@ public class GameVisualizer extends JPanel {
 	}
 
 	private final Timer m_timer = initTimer();
-	static ArrayList<Rectangle> m_rcts = new ArrayList<Rectangle>();
-
-	private static void m_rctsSet(Rectangle rectangle) {
+	private static ArrayList<Rectangle> m_rcts = new ArrayList<Rectangle>();
+	public static void m_rctsSet(Rectangle rectangle) {
 		m_rcts.add(rectangle);
+	}
+	public static ArrayList<Rectangle> getArrayRcts()
+	{
+		ArrayList<Rectangle> rects = m_rcts;
+		return rects;
 	}
 
 	private static ArrayList<Robot> m_rbts = new ArrayList<Robot>();
@@ -48,18 +52,18 @@ public class GameVisualizer extends JPanel {
 		return timer;
 	}
 
-	Robot currentRobot = m_rbts.get(0);
+	private Robot currentRobot = m_rbts.get(0);
 
-	volatile static Point m_targetPositionPoint;
+	private volatile static Point m_targetPositionPoint;
 
 	public static Point getTargetPoint() {
 		return m_targetPositionPoint;
 	}
 
-	int x0;
-	int y0;
-	int x1;
-	int y1;
+	private int x0;
+	private int y0;
+	private int x1;
+	private int y1;
 
 	public GameVisualizer() {
 		m_timer.schedule(new TimerTask() {
@@ -115,8 +119,8 @@ public class GameVisualizer extends JPanel {
 	}
 
 	protected void setTargetPosition(Point p, Robot r) {
-		r.m_targetPositionX = p.x;
-		r.m_targetPositionY = p.y;
+		r.setM_targetPositionX(p.x);
+		r.setM_targetPositionY(p.y);
 		m_targetPositionPoint = p;
 	}
 
@@ -149,14 +153,14 @@ public class GameVisualizer extends JPanel {
 				return;
 			}
 		}
-		double distance = distance(robot.m_targetPositionX, robot.m_targetPositionY, robot.getRobotX(),
+		double distance = distance(robot.getM_targetPositionX(), robot.getM_targetPositionY(), robot.getRobotX(),
 				robot.getRobotY());
 		if (distance < 1) {
 			return;
 		}
 		double velocity = robot.getMaxVelocity();
-		double angleToTarget = angleTo(robot.getRobotX(), robot.getRobotY(), robot.m_targetPositionX,
-				robot.m_targetPositionY);
+		double angleToTarget = angleTo(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
+				robot.getM_targetPositionY());
 		double angularVelocity = 0;
 		if (angleToTarget > robot.getRobotDirection()) {
 			angularVelocity = robot.getmaxAngularVelocity();
@@ -166,21 +170,17 @@ public class GameVisualizer extends JPanel {
 		}
 
 		if ((robot.get_mode() == "BFS")
-				&& (!isAble(robot.getRobotX(), robot.getRobotY(), robot.m_targetPositionX, robot.m_targetPositionY))
-				&& (robot.m_temp != null)) {
+				&& (!isAble(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(), robot.getM_targetPositionY()))
+				&& (robot.getNextPoint() != null)) {
 
-			if ((robot.getRobotX() <= robot.m_temp.x + 0.5 && robot.getRobotY() <= robot.m_temp.y + 0.5)
-					&& (robot.getRobotX() >= robot.m_temp.x - 0.5 && robot.getRobotY() >= robot.m_temp.y - 0.5)
-					|| (robot.getRobotX() >= robot.m_temp.x + 0.5 && robot.getRobotY() >= robot.m_temp.y + 0.5)
-							&& (robot.getRobotX() <= robot.m_temp.x - 0.5
-									&& robot.getRobotY() <= robot.m_temp.y - 0.5)) {
-				try {
-					robot.m_temp = robot.m_way.pop();
-				} catch (Exception e) {
-				}
-
+			if ((robot.getRobotX() <= robot.getNextPoint().x + 0.5 && robot.getRobotY() <= robot.getNextPoint().y + 0.5)
+					&& (robot.getRobotX() >= robot.getNextPoint().x - 0.5 && robot.getRobotY() >= robot.getNextPoint().y - 0.5)
+					|| (robot.getRobotX() >= robot.getNextPoint().x + 0.5 && robot.getRobotY() >= robot.getNextPoint().y + 0.5)
+							&& (robot.getRobotX() <= robot.getNextPoint().x - 0.5
+									&& robot.getRobotY() <= robot.getNextPoint().y - 0.5)) {
+					robot.setNextPoint();
 			}
-			BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.m_temp);
+			BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.getNextPoint());
 		} else
 			moveRobot(velocity, angularVelocity, 10, robot);
 	}
@@ -210,8 +210,8 @@ public class GameVisualizer extends JPanel {
 		}
 		robot.setRobotX(newX);
 		robot.setRobotY(newY);
-		double newDirection = angleTo(robot.getRobotX(), robot.getRobotY(), robot.m_targetPositionX,
-				robot.m_targetPositionY);
+		double newDirection = angleTo(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
+				robot.getM_targetPositionY());
 		// asNormalizedRadians(robot.m_robotDirection + angularVelocity * duration);
 		robot.setRobotDirection(newDirection);
 	}
@@ -257,7 +257,7 @@ public class GameVisualizer extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		for (Robot r : m_rbts) {
 			drawRobot(g2d, r);
-			drawTarget(g2d, r.m_targetPositionX, r.m_targetPositionY);
+			drawTarget(g2d, r.getM_targetPositionX(), r.getM_targetPositionY());
 		}
 
 		for (Rectangle rect : m_rcts) {
@@ -313,7 +313,6 @@ public class GameVisualizer extends JPanel {
 				&& (p.y >= rect.getY()))
 			return true;
 		return false;
-
 	}
 
 	static boolean isAble(double x, double y, double x1, double y1) {
@@ -325,6 +324,3 @@ public class GameVisualizer extends JPanel {
 	}
 
 }
-/********************************************************************************
- * приоритет отрисовки????
- *********************************************************************************/

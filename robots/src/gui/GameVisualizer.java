@@ -36,8 +36,12 @@ public class GameVisualizer extends JPanel {
 	private final Timer m_timer = initTimer();
 	private static ArrayList<Rectangle> m_rcts = new ArrayList<Rectangle>();
 
-	public static void m_rctsSet(Rectangle rectangle) {
+	public void m_rctsSet(Rectangle rectangle) {
 		m_rcts.add(rectangle);
+	}
+
+	public static void m_rctsRemove(Rectangle r) {
+		m_rcts.remove(r);
 	}
 
 	public static ArrayList<Rectangle> getArrayRcts() {
@@ -102,7 +106,9 @@ public class GameVisualizer extends JPanel {
 						currentRobot.BFS();
 					}
 				} else if (modeFlag == "remove")
-					Rectangle.removeRectangle(e.getPoint(), m_rcts);
+					for (int i = 0; i < m_rcts.size(); i++) {
+						m_rcts.get(i).removeRectangle(e.getPoint());
+					}
 				else if ((modeFlag == "create") && (e.getButton() != MouseEvent.BUTTON2))
 					if (count == 0) {
 						x0 = e.getPoint().x;

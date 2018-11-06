@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import gameObjects.Rectangle;
 import gameObjects.Robot;
 import logic.Logic;
+import logic.Movement;
 
 public class GameVisualizer extends JPanel {
 
@@ -107,7 +108,7 @@ public class GameVisualizer extends JPanel {
 					}
 				} else if (modeFlag == "remove")
 					for (int i = 0; i < m_rcts.size(); i++) {
-						m_rcts.get(i).removeRectangle(e.getPoint());
+						Logic.removeRectangle(e.getPoint(),m_rcts.get(i));
 					}
 				else if ((modeFlag == "create") && (e.getButton() != MouseEvent.BUTTON2))
 					if (count == 0) {
@@ -171,9 +172,9 @@ public class GameVisualizer extends JPanel {
 									&& robot.getRobotY() <= robot.getNextPoint().y - 0.5)) {
 				robot.setNextPoint();
 			}
-			Logic.BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.getNextPoint());
+			Movement.BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.getNextPoint());
 		} else
-			Logic.moveRobot(velocity, angularVelocity, 10, robot);
+			Movement.moveRobot(velocity, angularVelocity, 10, robot);
 	}
 
 	public void paint(Graphics g) {

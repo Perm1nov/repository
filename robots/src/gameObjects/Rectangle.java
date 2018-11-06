@@ -2,8 +2,6 @@ package gameObjects;
 
 import java.awt.Point;
 
-import gui.GameVisualizer;
-
 public class Rectangle {
 	private float x0, y0; // координаты левого верхнего угла
 	private float x1, y1; // координаты второго угла (координаты положения мыши)
@@ -74,16 +72,7 @@ public class Rectangle {
 		return this.p0 + " " + this.p1 + " " + this.p2 + " " + this.p3;
 	}
 
-	public void removeRectangle(Point p) {
-		if (isInRectangle(p, this))
-			GameVisualizer.m_rctsRemove(this);
-	}
+	
 
-	public boolean isInRectangle(Point p, Rectangle rect) {
-		if ((p.x >= rect.getX()) && (p.x <= rect.getX() + rect.getWidth()) && (p.y <= rect.getY() + rect.getHeight())
-				&& (p.y >= rect.getY()))
-			return true;
-		return false;
-	}
-
+	
 }

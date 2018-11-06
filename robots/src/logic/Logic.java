@@ -2,14 +2,16 @@ package logic;
 
 import java.awt.Point;
 
+import gameObjects.Rectangle;
 import gameObjects.Robot;
+import gui.GameVisualizer;
 
 public class Logic {
 	public static int round(double value) {
 		return (int) (value + 0.5);
 	}
 
-	private static double applyLimits(double value, double min, double max) {
+	 static double applyLimits(double value, double min, double max) {
 		if (value < min)
 			return min;
 		if (value > max)
@@ -17,14 +19,14 @@ public class Logic {
 		return value;
 	}
 
-	public static double angleTo(double fromX, double fromY, double toX, double toY) {
+	 public static double angleTo(double fromX, double fromY, double toX, double toY) {
 		double diffX = toX - fromX;
 		double diffY = toY - fromY;
 
 		return asNormalizedRadians(Math.atan2(diffY, diffX));
 	}
 
-	public static double distance(double x1, double y1, double x2, double y2) {
+	 public static double distance(double x1, double y1, double x2, double y2) {
 		double diffX = x1 - x2;
 		double diffY = y1 - y2;
 		return Math.sqrt(diffX * diffX + diffY * diffY);
@@ -45,47 +47,18 @@ public class Logic {
 		r.setM_targetPositionY(p.y);
 	}
 
-	public static void moveRobot(double velocity, double angularVelocity, double duration, Robot robot) {
-		velocity = applyLimits(velocity, 0, robot.getMaxVelocity());
-		angularVelocity = applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
-		double newX = robot.getRobotX()
-				+ velocity / angularVelocity * (Math.sin(robot.getRobotDirection() + angularVelocity * duration)
-						- Math.sin(robot.getRobotDirection()));
-		if (!Double.isFinite(newX)) {
-			newX = robot.getRobotX() + velocity * duration * Math.cos(robot.getRobotDirection());
-		}
-		double newY = robot.getRobotY()
-				- velocity / angularVelocity * (Math.cos(robot.getRobotDirection() + angularVelocity * duration)
-						- Math.cos(robot.getRobotDirection()));
-		if (!Double.isFinite(newY)) {
-			newY = robot.getRobotY() + velocity * duration * Math.sin(robot.getRobotDirection());
-		}
-		robot.setRobotX(newX);
-		robot.setRobotY(newY);
-		double newDirection = angleTo(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
-				robot.getM_targetPositionY());
-		// asNormalizedRadians(robot.m_robotDirection + angularVelocity * duration);
-		robot.setRobotDirection(newDirection);
+	
+
+	
+	public static void removeRectangle(Point p, Rectangle rect) {
+		if (isInRectangle(p, rect))
+			GameVisualizer.m_rctsRemove(rect);
+	}
+	public static boolean isInRectangle(Point p, Rectangle rect) {
+		if ((p.x >= rect.getX()) && (p.x <= rect.getX() + rect.getWidth()) && (p.y <= rect.getY() + rect.getHeight())
+				&& (p.y >= rect.getY()))
+			return true;
+		return false;
 	}
 
-	public static void BFSMoveRobot(double velocity, double angularVelocity, double duration, Robot robot, Point temp) {
-		velocity = applyLimits(velocity, 0, robot.getMaxVelocity());
-		angularVelocity = applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
-		double newX = robot.getRobotX()
-				+ velocity / angularVelocity * (Math.sin(robot.getRobotDirection() + angularVelocity * duration)
-						- Math.sin(robot.getRobotDirection()));
-		if (!Double.isFinite(newX)) {
-			newX = robot.getRobotX() + velocity * duration * Math.cos(robot.getRobotDirection());
-		}
-		double newY = robot.getRobotY()
-				- velocity / angularVelocity * (Math.cos(robot.getRobotDirection() + angularVelocity * duration)
-						- Math.cos(robot.getRobotDirection()));
-		if (!Double.isFinite(newY)) {
-			newY = robot.getRobotY() + velocity * duration * Math.sin(robot.getRobotDirection());
-		}
-		robot.setRobotX(newX);
-		robot.setRobotY(newY);
-		double newDirection = angleTo(robot.getRobotX(), robot.getRobotY(), temp.getX(), temp.getY());
-		robot.setRobotDirection(newDirection);
-	}
 }

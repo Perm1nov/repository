@@ -1,4 +1,5 @@
 package gameObjects;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -7,6 +8,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 import gui.GameVisualizer;
+import logic.Logic;
 
 public class Robot {
 
@@ -74,6 +76,7 @@ public class Robot {
 
 	private volatile Stack<Point> m_way = new Stack<Point>();
 	private Point m_temp;
+
 	public Point getNextPoint() {
 		return m_temp;
 	}
@@ -132,7 +135,7 @@ public class Robot {
 		double max = Integer.MAX_VALUE;
 		List<Point> map = getMap();
 		for (int i = 0; i < map.size(); i++) {
-			double c = GameVisualizer.distance(map.get(i).x, map.get(i).y, robotX, robotY);
+			double c = Logic.distance(map.get(i).x, map.get(i).y, robotX, robotY);
 			if (c < max) {
 				max = c;
 				temp = i;

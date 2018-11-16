@@ -14,6 +14,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import gameObjects.Robot;
 import log.Logger;
+import logic.Logic;
 
 public class WindowHelper extends JFrame {
 
@@ -29,10 +30,14 @@ public class WindowHelper extends JFrame {
 		return logWindow;
 	}
 
+	private Logic logic = new Logic();
+
 	protected void addWindow(JInternalFrame frame, JDesktopPane desktopPane) {
 		desktopPane.add(frame);
 		frame.setVisible(true);
 	}
+
+	private GameVisualizer gv = new GameVisualizer("asd");
 
 	JMenuBar generateMenuBar() {
 
@@ -44,11 +49,12 @@ public class WindowHelper extends JFrame {
 
 			JMenuItem RegularRobot = new JMenuItem("Regular", KeyEvent.VK_S);
 			RegularRobot.addActionListener((event) -> {
-				GameVisualizer.m_rbtsSet(new Robot());
+
+				gv.addRbt(new Robot());
 			});
 			JMenuItem BFSRobot = new JMenuItem("BFS", KeyEvent.VK_S);
 			BFSRobot.addActionListener((event) -> {
-				GameVisualizer.m_rbtsSet(new Robot("BFS"));
+				gv.addRbt(new Robot("BFS"));
 			});
 			JMenu mods = new JMenu("Новый робот");
 			fme.add(mods);
@@ -61,7 +67,7 @@ public class WindowHelper extends JFrame {
 		{
 			JMenuItem addRect = new JMenuItem("Нарисовать прямоугольник", KeyEvent.VK_S);
 			addRect.addActionListener((event) -> {
-				GameVisualizer.setFlag("create");
+				logic.setFlag("create");
 			});
 			mode.add(addRect);
 		}
@@ -69,7 +75,7 @@ public class WindowHelper extends JFrame {
 		{
 			JMenuItem removeTarget = new JMenuItem("Удалить прямоугольник", KeyEvent.VK_S);
 			removeTarget.addActionListener((event) -> {
-				GameVisualizer.setFlag("remove");
+				logic.setFlag("remove");
 			});
 			mode.add(removeTarget);
 		}

@@ -1,18 +1,11 @@
 package gameObjects;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.Stack;
-
-import gui.GameVisualizer;
-import logic.Logic;
 
 public class Robot {
 
-	private volatile double robotX = 0;
+	private volatile double robotX = 50;
 
 	public double getRobotX() {
 		return robotX;
@@ -22,7 +15,7 @@ public class Robot {
 		robotX = newX;
 	}
 
-	private volatile double robotY = 0;
+	private volatile double robotY = 50;
 
 	public double getRobotY() {
 		return robotY;
@@ -32,7 +25,7 @@ public class Robot {
 		robotY = newY;
 	}
 
-	private volatile double m_robotDirection = 500;
+	private volatile double m_robotDirection = 100;
 
 	public double getRobotDirection() {
 		return m_robotDirection;
@@ -85,10 +78,18 @@ public class Robot {
 	}
 
 	private volatile Stack<Point> m_way = new Stack<Point>();
-	private Point m_temp;
+	public void setM_way(Stack<Point> st)
+	{
+		m_way = st;
+	}
+	private  Point m_temp;
 
 	public Point getNextPoint() {
 		return m_temp;
+	}
+	public void setNextPoint(Point p)
+	{
+		m_temp = p;
 	}
 
 	public void setNextPoint() {
@@ -123,61 +124,8 @@ public class Robot {
 	public Robot() {
 	}
 
-	public  List<Point> getMap() {
-		Rectangle temp;
-		ArrayList<Rectangle> tempArray = GameVisualizer.getArrayRcts();
-		if (tempArray.isEmpty())
-			return null;
-		List<Point> p = new ArrayList<Point>();
-		for (int i = 0; i < tempArray.size(); i++) {
-			temp = tempArray.get(i);
-			p.add(temp.getP0());
-			p.add(temp.getP1());
-			p.add(temp.getP2());
-			p.add(temp.getP3());
-		}
-		p.add(m_targetPoint);
-		return p;
-	}
-
-	public void BFS() {
-		int temp = 0;
-		double max = Integer.MAX_VALUE;
-		List<Point> map = getMap();
-		for (int i = 0; i < map.size(); i++) {
-			double c = Logic.distance(map.get(i).x, map.get(i).y, robotX, robotY);
-			if (c < max) {
-				max = c;
-				temp = i;
-			}
-
-		}
-		int[] num = new int[map.size()];
-		int[] father = new int[map.size()];
-		num[temp] = 1;
-		father[temp] = -1;
-		Queue<Integer> q = new LinkedList<Integer>();
-		Stack<Point> st = new Stack<Point>();
-		int a = temp;
-		q.add(a);
-		while (!q.isEmpty()) {
-			int pn = q.remove();
-			for (int i = 0; i < num.length; i++) {
-				if (GameVisualizer.isAble(map.get(pn).x, map.get(pn).y, map.get(i).x, map.get(i).y) && (num[i] != 1)) {
-					num[i] = 1;
-					father[i] = pn;
-					q.add(i);
-				}
-			}
-		}
-		int y = map.size() - 1;
-		while ((y != a) && (father[y] != -1)) {
-			y = father[y];
-			st.push(map.get(y));
-		}
-		m_way = st;
-		if (!st.isEmpty())
-			m_temp = st.pop();
-	}
+	
+	//private Logic logic = new Logic();
+	
 
 }

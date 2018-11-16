@@ -10,13 +10,19 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
 import gameObjects.Rectangle;
+import gameObjects.RectsArray;
 import gameObjects.Robot;
+import gameObjects.RobotsArray;
 import logic.Logic;
 import logic.Movement;
 
@@ -24,55 +30,50 @@ public class GameVisualizer extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private int count = 0;
-	private static String modeFlag = "create";
+
 	private int x0;
 	private int y0;
 	private int x1;
 	private int y1;
 
-	public static void setFlag(String str) {
-		modeFlag = str;
-	}
-
 	private final Timer m_timer = initTimer();
-	private static ArrayList<Rectangle> m_rcts = new ArrayList<Rectangle>();
 
-	public void m_rctsSet(Rectangle rectangle) {
-		m_rcts.add(rectangle);
-	}
-
-	public static void m_rctsRemove(Rectangle r) {
-		m_rcts.remove(r);
-	}
-
-	public static ArrayList<Rectangle> getArrayRcts() {
-		ArrayList<Rectangle> rects = m_rcts;
-		return rects;
-	}
-
-	private static ArrayList<Robot> m_rbts = new ArrayList<Robot>();
-
-	public static void m_rbtsSet(Robot obj) {
-		m_rbts.add(obj);
-	}
-
+	private static RobotsArray rbts = new RobotsArray();
+	private static RectsArray rcts = new RectsArray();
+	public RobotsArray getRbts()
 	{
-		m_rbtsSet(new Robot("BFS"));
+		return rbts;
+	}
+	public void addRbt(Robot r)
+	{
+		rbts.add(r);
+	}
+	private Movement movement = new Movement();
+	private Logic logic = new Logic();
+	{
+		rbts.m_rbtsSet(new Robot("BFS"));
 	}
 
-	private static Timer initTimer() {
+	private Timer initTimer() {
 		Timer timer = new Timer("events generator", true);
 		return timer;
 	}
 
-	private Robot currentRobot = m_rbts.get(0);
+	private Robot currentRobot = rbts.get(0);
 
 	private volatile static Point m_targetPositionPoint;
 
-	public static Point getTargetPoint() {
+	public Point getTargetPoint() {
 		return m_targetPositionPoint;
 	}
 
+	public void setTargetPoint(Point p) {
+		m_targetPositionPoint = p;
+	}
+	public GameVisualizer(String s)
+	{
+		
+	}
 	public GameVisualizer() {
 		m_timer.schedule(new TimerTask() {
 			@Override
@@ -82,9 +83,9 @@ public class GameVisualizer extends JPanel {
 		}, 0, 15);
 		m_timer.schedule(new TimerTask() {
 			public void run() {
-				if (m_rbts.isEmpty())
+				if (rbts.isEmpty())
 					return;
-				for (Robot r : m_rbts) {
+				for (Robot r : rbts) {
 					onModelUpdateEvent(r);
 				}
 			}
@@ -93,24 +94,25 @@ public class GameVisualizer extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
-				for (Robot robot : m_rbts) {
+				for (Robot robot : rbts) {
 					if (e.getButton() == MouseEvent.BUTTON2
-							&& ((Math.pow(e.getX() - Logic.round(robot.getRobotX()), 2) / 30 * 30
-									+ Math.pow(e.getY() - Logic.round(robot.getRobotY()), 2)) / 10 * 10) <= 300) {
+							&& ((Math.pow(e.getX() - logic.round(robot.getRobotX()), 2) / 30 * 30
+									+ Math.pow(e.getY() - logic.round(robot.getRobotY()), 2)) / 10 * 10) <= 300) {
 						currentRobot = robot;
 						break;
 					}
 				}
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					Logic.setTargetPosition(e.getPoint(), currentRobot);
-					if (!m_rcts.isEmpty()) {
-						currentRobot.BFS();
+					setTargetPoint(e.getPoint());
+					logic.setTargetPosition(e.getPoint(),currentRobot);
+					if (!rcts.isEmpty()) {
+						BFS(currentRobot);
 					}
-				} else if (modeFlag == "remove")
-					for (int i = 0; i < m_rcts.size(); i++) {
-						Logic.removeRectangle(e.getPoint(),m_rcts.get(i));
+				} else if (logic.getFlag() == "remove")
+					for (int i = 0; i < rcts.size(); i++) {
+						rcts.removeRectangle(e.getPoint(), rcts.get(i));
 					}
-				else if ((modeFlag == "create") && (e.getButton() != MouseEvent.BUTTON2))
+				else if ((logic.getFlag() == "create") && (e.getButton() != MouseEvent.BUTTON2))
 					if (count == 0) {
 						x0 = e.getPoint().x;
 						y0 = e.getPoint().y;
@@ -119,7 +121,7 @@ public class GameVisualizer extends JPanel {
 						x1 = e.getPoint().x;
 						y1 = e.getPoint().y;
 						count = 0;
-						m_rctsSet(new Rectangle(x0, y0, x1, y1));
+						rcts.m_rctsSet(new Rectangle(x0, y0, x1, y1));
 					}
 				repaint();
 			}
@@ -136,7 +138,7 @@ public class GameVisualizer extends JPanel {
 		if (robot.getAlive() == false)
 			return;
 
-		for (Rectangle rect : m_rcts) {
+		for (Rectangle rect : rcts) {
 			if ((robot.getRobotX() >= rect.getX()) && (robot.getRobotY() >= rect.getY())
 					&& (robot.getRobotX() <= rect.getX() + rect.getWidth())
 					&& (robot.getRobotY() <= rect.getY() + rect.getHeight())) {
@@ -144,13 +146,13 @@ public class GameVisualizer extends JPanel {
 				return;
 			}
 		}
-		double distance = Logic.distance(robot.getM_targetPositionX(), robot.getM_targetPositionY(), robot.getRobotX(),
+		double distance = logic.distance(robot.getM_targetPositionX(), robot.getM_targetPositionY(), robot.getRobotX(),
 				robot.getRobotY());
 		if (distance < 1) {
 			return;
 		}
 		double velocity = robot.getMaxVelocity();
-		double angleToTarget = Logic.angleTo(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
+		double angleToTarget = logic.angleTo(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
 				robot.getM_targetPositionY());
 		double angularVelocity = 0;
 		if (angleToTarget > robot.getRobotDirection()) {
@@ -172,21 +174,21 @@ public class GameVisualizer extends JPanel {
 									&& robot.getRobotY() <= robot.getNextPoint().y - 0.5)) {
 				robot.setNextPoint();
 			}
-			Movement.BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.getNextPoint());
+			movement.BFSMoveRobot(velocity, angularVelocity, 10, robot, robot.getNextPoint());
 		} else
-			Movement.moveRobot(velocity, angularVelocity, 10, robot);
+			movement.moveRobot(velocity, angularVelocity, 10, robot);
 	}
 
 	public void paint(Graphics g) {
 
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
-		for (Robot r : m_rbts) {
+		for (Robot r : rbts) {
 			drawRobot(g2d, r);
 			drawTarget(g2d, r.getM_targetPositionX(), r.getM_targetPositionY());
 		}
 
-		for (Rectangle rect : m_rcts) {
+		for (Rectangle rect : rcts) {
 			g.setColor(Color.BLACK);
 			g.fillRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
 		}
@@ -201,8 +203,8 @@ public class GameVisualizer extends JPanel {
 	}
 
 	private void drawRobot(Graphics2D g, Robot robot) {
-		int robotCenterX = Logic.round(robot.getRobotX());
-		int robotCenterY = Logic.round(robot.getRobotY());
+		int robotCenterX = logic.round(robot.getRobotX());
+		int robotCenterY = logic.round(robot.getRobotY());
 		AffineTransform t = AffineTransform.getRotateInstance(robot.getRobotDirection(), robotCenterX, robotCenterY);
 		g.setTransform(t);
 		g.setColor(Color.MAGENTA);
@@ -224,9 +226,66 @@ public class GameVisualizer extends JPanel {
 		drawOval(g, x, y, 5, 5);
 	}
 
-	public static boolean isAble(double x, double y, double x1, double y1) {
+	public List<Point> getMap() {
+		Rectangle temp;
+		ArrayList<Rectangle> tempArray = rcts.getArrayRcts();
+		if (tempArray.isEmpty())
+			return null;
+		List<Point> p = new ArrayList<Point>();
+		for (int i = 0; i < tempArray.size(); i++) {
+			temp = tempArray.get(i);
+			p.add(temp.getP0());
+			p.add(temp.getP1());
+			p.add(temp.getP2());
+			p.add(temp.getP3());
+		}
+		p.add(getTargetPoint());
+		return p;
+	}
+
+	public void BFS(Robot r) {
+		int temp = 0;
+		double max = Integer.MAX_VALUE;
+		List<Point> map = getMap();
+		for (int i = 0; i < map.size(); i++) {
+			double c = logic.distance(map.get(i).x, map.get(i).y, r.getRobotX(), r.getRobotY());
+			if (c < max) {
+				max = c;
+				temp = i;
+			}
+
+		}
+		int[] num = new int[map.size()];
+		int[] father = new int[map.size()];
+		num[temp] = 1;
+		father[temp] = -1;
+		Queue<Integer> q = new LinkedList<Integer>();
+		Stack<Point> st = new Stack<Point>();
+		int a = temp;
+		q.add(a);
+		while (!q.isEmpty()) {
+			int pn = q.remove();
+			for (int i = 0; i < num.length; i++) {
+				if (isAble(map.get(pn).x, map.get(pn).y, map.get(i).x, map.get(i).y) && (num[i] != 1)) {
+					num[i] = 1;
+					father[i] = pn;
+					q.add(i);
+				}
+			}
+		}
+		int y = map.size() - 1;
+		while ((y != a) && (father[y] != -1)) {
+			y = father[y];
+			st.push(map.get(y));
+		}
+		r.setM_way(st);
+		if (!st.isEmpty())
+			r.setNextPoint(st.pop());
+	}
+
+	public boolean isAble(double x, double y, double x1, double y1) {
 		Line2D line = new Line2D.Double(x, y, x1, y1);
-		for (Rectangle rect : m_rcts)
+		for (Rectangle rect : rcts)
 			if (line.intersects(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()))
 				return false;
 		return true;

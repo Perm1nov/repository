@@ -74,6 +74,16 @@ public class Robot {
 		this.m_targetPositionY = m_targetPositionY;
 	}
 
+	private volatile Point m_targetPoint;
+
+	public Point getM_targetPoint() {
+		return m_targetPoint;
+	}
+
+	public void setM_targetPoint(Point point) {
+		this.m_targetPoint = point;
+	}
+
 	private volatile Stack<Point> m_way = new Stack<Point>();
 	private Point m_temp;
 
@@ -113,7 +123,7 @@ public class Robot {
 	public Robot() {
 	}
 
-	public static List<Point> getMap() {
+	public  List<Point> getMap() {
 		Rectangle temp;
 		ArrayList<Rectangle> tempArray = GameVisualizer.getArrayRcts();
 		if (tempArray.isEmpty())
@@ -126,7 +136,7 @@ public class Robot {
 			p.add(temp.getP2());
 			p.add(temp.getP3());
 		}
-		p.add(GameVisualizer.getTargetPoint());
+		p.add(m_targetPoint);
 		return p;
 	}
 

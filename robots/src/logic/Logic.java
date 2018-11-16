@@ -45,6 +45,7 @@ public class Logic {
 	public static void setTargetPosition(Point p, Robot r) {
 		r.setM_targetPositionX(p.x);
 		r.setM_targetPositionY(p.y);
+		r.setM_targetPoint(p);
 	}
 
 	

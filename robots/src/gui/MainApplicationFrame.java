@@ -1,6 +1,5 @@
 package gui;
 
-import gui.WindowHelper;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JDesktopPane;
@@ -9,25 +8,22 @@ import javax.swing.JFrame;
 public class MainApplicationFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private final JDesktopPane desktopPane = new JDesktopPane();
-	private WindowHelper windowHelper = new WindowHelper();
 
 	public MainApplicationFrame() {
-		// Make the big window be indented 50 pixels from each edge
-		// of the screen.
+		GameWindow gameWindow = new GameWindow();
+		gameWindow.setSize(400, 400);
 		int inset = 50;
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setBounds(inset, inset, screenSize.width - inset * 2, screenSize.height - inset * 2);
 
 		setContentPane(desktopPane);
 
-		LogWindow logWindow = windowHelper.createLogWindow();
-		windowHelper.addWindow(logWindow, desktopPane);
+		LogWindow logWindow = gameWindow.createLogWindow();
+		gameWindow.addWindow(logWindow, desktopPane);
 
-		GameWindow gameWindow = new GameWindow();
-		gameWindow.setSize(400, 400);
-		windowHelper.addWindow(gameWindow, desktopPane);
+		gameWindow.addWindow(gameWindow, desktopPane);
 
-		setJMenuBar(windowHelper.generateMenuBar());
+		setJMenuBar(gameWindow.generateMenuBar());
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 

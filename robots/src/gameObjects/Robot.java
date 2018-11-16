@@ -5,7 +5,7 @@ import java.util.Stack;
 
 public class Robot {
 
-	private volatile double robotX = 50;
+	private volatile double robotX = 0;
 
 	public double getRobotX() {
 		return robotX;
@@ -15,7 +15,7 @@ public class Robot {
 		robotX = newX;
 	}
 
-	private volatile double robotY = 50;
+	private volatile double robotY = 0;
 
 	public double getRobotY() {
 		return robotY;
@@ -25,7 +25,7 @@ public class Robot {
 		robotY = newY;
 	}
 
-	private volatile double m_robotDirection = 100;
+	private volatile double m_robotDirection = 500;
 
 	public double getRobotDirection() {
 		return m_robotDirection;
@@ -67,33 +67,19 @@ public class Robot {
 		this.m_targetPositionY = m_targetPositionY;
 	}
 
-	private volatile Point m_targetPoint;
-
-	public Point getM_targetPoint() {
-		return m_targetPoint;
-	}
-
-	public void setM_targetPoint(Point point) {
-		this.m_targetPoint = point;
-	}
-
 	private volatile Stack<Point> m_way = new Stack<Point>();
-	public void setM_way(Stack<Point> st)
-	{
-		m_way = st;
+	private Point m_temp;
+
+	public void SetM_temp(Point p) {
+		m_temp = p;
 	}
-	private  Point m_temp;
 
 	public Point getNextPoint() {
 		return m_temp;
 	}
-	public void setNextPoint(Point p)
-	{
-		m_temp = p;
-	}
 
 	public void setNextPoint() {
-		m_temp = m_way.pop();
+		m_temp = getM_way().pop();
 	}
 
 	private boolean status = true;
@@ -124,8 +110,12 @@ public class Robot {
 	public Robot() {
 	}
 
-	
-	//private Logic logic = new Logic();
-	
+	public Stack<Point> getM_way() {
+		return m_way;
+	}
+
+	public void setM_way(Stack<Point> point) {
+		this.m_way = point;
+	}
 
 }

@@ -1,20 +1,13 @@
 package logic;
 
 import java.awt.Point;
+
+import gameObjects.Rectangle;
 import gameObjects.Robot;
 
 public class Logic {
 	public int round(double value) {
 		return (int) (value + 0.5);
-	}
-
-	private static String modeFlag = "create";
-	public void setFlag(String str) {
-		modeFlag = str;
-	}
-	public String getFlag()
-	{
-		return modeFlag;
 	}
 
 	public double applyLimits(double value, double min, double max) {
@@ -38,7 +31,7 @@ public class Logic {
 		return Math.sqrt(diffX * diffX + diffY * diffY);
 	}
 
-	private double asNormalizedRadians(double angle) {
+	public double asNormalizedRadians(double angle) {
 		while (angle < 0) {
 			angle += 2 * Math.PI;
 		}
@@ -51,8 +44,13 @@ public class Logic {
 	public void setTargetPosition(Point p, Robot r) {
 		r.setM_targetPositionX(p.x);
 		r.setM_targetPositionY(p.y);
-		r.setM_targetPoint(p);
 	}
-	
+
+	public boolean isInRectangle(Point p, Rectangle rect) {
+		if ((p.x >= rect.getX()) && (p.x <= rect.getX() + rect.getWidth()) && (p.y <= rect.getY() + rect.getHeight())
+				&& (p.y >= rect.getY()))
+			return true;
+		return false;
+	}
 
 }

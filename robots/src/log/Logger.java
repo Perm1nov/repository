@@ -1,23 +1,23 @@
 package log;
 
 public final class Logger {
-	private static final LogWindowSource defaultLogSource;
-	static {
+	private  final LogWindowSource defaultLogSource;
+	{
 		defaultLogSource = new LogWindowSource(100);
 	}
 
-	private Logger() {
+	public Logger() {
 	}
 
-	public static void debug(String strMessage) {
+	public  void debug(String strMessage) {
 		defaultLogSource.append(LogLevel.Debug, strMessage);
 	}
 
-	public static void error(String strMessage) {
+	public  void error(String strMessage) {
 		defaultLogSource.append(LogLevel.Error, strMessage);
 	}
 
-	public static LogWindowSource getDefaultLogSource() {
+	public  LogWindowSource getDefaultLogSource() {
 		return defaultLogSource;
 	}
 }

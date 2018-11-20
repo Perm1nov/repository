@@ -20,18 +20,20 @@ public class GameWindow extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private final GameVisualizer m_visualizer;
+	private final Logger m_logger;
 
 	public GameWindow() {
 		super("Игровое поле", true, false, true, true);
 		this.setLocation(500, 100);
 		m_visualizer = new GameVisualizer();
+		m_logger = new Logger();
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(m_visualizer, BorderLayout.CENTER);
 		getContentPane().add(panel);
 		pack();
 
 	}
-
+    
 	JMenuBar generateMenuBar() {
 
 		JMenuBar menuBar = new JMenuBar();
@@ -101,7 +103,7 @@ public class GameWindow extends JInternalFrame {
 		{
 			JMenuItem addLogMessageItem = new JMenuItem("Сообщение в лог", KeyEvent.VK_S);
 			addLogMessageItem.addActionListener((event) -> {
-				Logger.debug("Новая строка");
+				m_logger.debug("Новая строка");
 			});
 			testMenu.add(addLogMessageItem);
 		}
@@ -124,12 +126,12 @@ public class GameWindow extends JInternalFrame {
 	}
 
 	protected LogWindow createLogWindow() {
-		LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
+		LogWindow logWindow = new LogWindow(m_logger.getDefaultLogSource());
 		logWindow.setLocation(10, 10);
 		logWindow.setSize(300, 800);
 		setMinimumSize(logWindow.getSize());
 		logWindow.pack();
-		Logger.debug("Протокол работает");
+		m_logger.debug("Протокол работает");
 		return logWindow;
 	}
 

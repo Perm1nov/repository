@@ -26,7 +26,6 @@ import logic.Movement;
 
 public class GameVisualizer extends JPanel {
 
-	private static final long serialVersionUID = 1L;
 	private int count = 0;
 	private String modeFlag = "create";
 	private int x0;

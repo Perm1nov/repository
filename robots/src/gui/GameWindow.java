@@ -18,7 +18,6 @@ import log.Logger;
 
 public class GameWindow extends JInternalFrame {
 
-	private static final long serialVersionUID = 1L;
 	private final GameVisualizer m_visualizer;
 	private final Logger m_logger;
 

@@ -86,6 +86,12 @@ public class GameVisualizer extends JPanel {
 		r.setM_targetPositionY(p.y);
 	}
 
+	public double distance(double x1, double y1, double x2, double y2) {
+		double diffX = x1 - x2;
+		double diffY = y1 - y2;
+		return Math.sqrt(diffX * diffX + diffY * diffY);
+	}
+	
 	public GameVisualizer() {
 		m_timer.schedule(new TimerTask() {
 			@Override
@@ -158,7 +164,7 @@ public class GameVisualizer extends JPanel {
 				return;
 			}
 		}
-		double distance = logic.distance(robot.getM_targetPositionX(), robot.getM_targetPositionY(), robot.getRobotX(),
+		double distance = distance(robot.getM_targetPositionX(), robot.getM_targetPositionY(), robot.getRobotX(),
 				robot.getRobotY());
 		if (distance < 1) {
 			return;
@@ -268,7 +274,7 @@ public class GameVisualizer extends JPanel {
 		double max = Integer.MAX_VALUE;
 		List<Point> map = getMap();
 		for (int i = 0; i < map.size(); i++) {
-			double c = logic.distance(map.get(i).x, map.get(i).y, r.getRobotX(), r.getRobotY());
+			double c = distance(map.get(i).x, map.get(i).y, r.getRobotX(), r.getRobotY());
 			if (c < max) {
 				max = c;
 				temp = i;

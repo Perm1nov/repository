@@ -7,10 +7,17 @@ import logic.Logic;
 
 public class Movement {
 
+	private double applyLimits(double value, double min, double max) {
+		if (value < min)
+			return min;
+		if (value > max)
+			return max;
+		return value;
+	}
 	private Logic logic = new Logic();
 	public void moveRobot(double velocity, double angularVelocity, double duration, Robot robot) {
-		velocity = logic.applyLimits(velocity, 0, robot.getMaxVelocity());
-		angularVelocity = logic.applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
+		velocity = applyLimits(velocity, 0, robot.getMaxVelocity());
+		angularVelocity = applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
 		double newX = robot.getRobotX()
 				+ velocity / angularVelocity * (Math.sin(robot.getRobotDirection() + angularVelocity * duration)
 						- Math.sin(robot.getRobotDirection()));
@@ -32,8 +39,8 @@ public class Movement {
 	}
 
 	public void BFSMoveRobot(double velocity, double angularVelocity, double duration, Robot robot, Point temp) {
-		velocity = logic.applyLimits(velocity, 0, robot.getMaxVelocity());
-		angularVelocity = logic.applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
+		velocity = applyLimits(velocity, 0, robot.getMaxVelocity());
+		angularVelocity = applyLimits(angularVelocity, -robot.getmaxAngularVelocity(), robot.getmaxAngularVelocity());
 		double newX = robot.getRobotX()
 				+ velocity / angularVelocity * (Math.sin(robot.getRobotDirection() + angularVelocity * duration)
 						- Math.sin(robot.getRobotDirection()));

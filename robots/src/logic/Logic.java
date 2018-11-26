@@ -6,9 +6,6 @@ import gameObjects.Rectangle;
 import gameObjects.Robot;
 
 public class Logic {
-	public int round(double value) {
-		return (int) (value + 0.5);
-	}
 
 	public double applyLimits(double value, double min, double max) {
 		if (value < min)
@@ -41,16 +38,6 @@ public class Logic {
 		return angle;
 	}
 
-	public void setTargetPosition(Point p, Robot r) {
-		r.setM_targetPositionX(p.x);
-		r.setM_targetPositionY(p.y);
-	}
-
-	public boolean isInRectangle(Point p, Rectangle rect) {
-		if ((p.x >= rect.getX()) && (p.x <= rect.getX() + rect.getWidth()) && (p.y <= rect.getY() + rect.getHeight())
-				&& (p.y >= rect.getY()))
-			return true;
-		return false;
-	}
+	
 
 }

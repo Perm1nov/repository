@@ -81,6 +81,10 @@ public class GameVisualizer extends JPanel {
 	public void setTargetPoint(Point p) {
 		m_targetPositionPoint = p;
 	}
+	public void setTargetPosition(Point p, Robot r) {
+		r.setM_targetPositionX(p.x);
+		r.setM_targetPositionY(p.y);
+	}
 
 	public GameVisualizer() {
 		m_timer.schedule(new TimerTask() {
@@ -104,15 +108,15 @@ public class GameVisualizer extends JPanel {
 
 				for (Robot robot : m_rbts) {
 					if (e.getButton() == MouseEvent.BUTTON2
-							&& ((Math.pow(e.getX() - logic.round(robot.getRobotX()), 2) / 30 * 30
-									+ Math.pow(e.getY() - logic.round(robot.getRobotY()), 2)) / 10 * 10) <= 300) {
+							&& ((Math.pow(e.getX() - Math.round(robot.getRobotX()), 2) / 30 * 30
+									+ Math.pow(e.getY() - Math.round(robot.getRobotY()), 2)) / 10 * 10) <= 300) {
 						currentRobot = robot;
 						break;
 					}
 				}
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					setTargetPoint(e.getPoint());
-					logic.setTargetPosition(e.getPoint(), currentRobot);
+					setTargetPosition(e.getPoint(), currentRobot);
 					if (!m_rcts.isEmpty()) {
 						BFS(currentRobot);
 					}
@@ -211,8 +215,8 @@ public class GameVisualizer extends JPanel {
 	}
 
 	private void drawRobot(Graphics2D g, Robot robot) {
-		int robotCenterX = logic.round(robot.getRobotX());
-		int robotCenterY = logic.round(robot.getRobotY());
+		int robotCenterX = (int) Math.round(robot.getRobotX());
+		int robotCenterY = (int) Math.round(robot.getRobotY());
 		AffineTransform t = AffineTransform.getRotateInstance(robot.getRobotDirection(), robotCenterX, robotCenterY);
 		g.setTransform(t);
 		g.setColor(Color.MAGENTA);
@@ -300,7 +304,7 @@ public class GameVisualizer extends JPanel {
 	}
 
 	public void removeRectangle(Point p, Rectangle rect) {
-		if (logic.isInRectangle(p, rect))
+		if (rect.isInRectangle(p, rect))
 			m_rctsRemove(rect);
 	}
 

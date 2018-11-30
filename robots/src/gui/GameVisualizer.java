@@ -310,7 +310,8 @@ public class GameVisualizer extends JPanel {
 	}
 
 	public void removeRectangle(Point p, Rectangle rect) {
-		if (rect.isInRectangle(p, rect))
+		if ((p.x >= rect.getX()) && (p.x <= rect.getX() + rect.getWidth()) && (p.y <= rect.getY() + rect.getHeight())
+				&& (p.y >= rect.getY()))
 			m_rctsRemove(rect);
 	}
 

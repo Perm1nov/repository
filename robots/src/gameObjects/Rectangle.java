@@ -72,11 +72,4 @@ public class Rectangle {
 		return this.p0 + " " + this.p1 + " " + this.p2 + " " + this.p3;
 	}
 
-	public boolean isInRectangle(Point p, Rectangle rect) {
-		if ((p.x >= rect.getX()) && (p.x <= rect.getX() + rect.getWidth()) && (p.y <= rect.getY() + rect.getHeight())
-				&& (p.y >= rect.getY()))
-			return true;
-		return false;
-	}
-
 }

@@ -72,4 +72,9 @@ public class Rectangle {
 		return this.p0 + " " + this.p1 + " " + this.p2 + " " + this.p3;
 	}
 
+	public boolean isPointInRectangle(Point p) {
+		return ((p.x >= this.getX()) && (p.x <= this.getX() + this.getWidth())
+				&& (p.y <= this.getY() + this.getHeight()) && (p.y >= this.getY()));
+	}
+
 }

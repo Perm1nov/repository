@@ -12,6 +12,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.Timer;
@@ -81,6 +82,7 @@ public class GameVisualizer extends JPanel {
 	public void setTargetPoint(Point p) {
 		m_targetPositionPoint = p;
 	}
+
 	public void setTargetPosition(Point p, Robot r) {
 		r.setM_targetPositionX(p.x);
 		r.setM_targetPositionY(p.y);
@@ -91,7 +93,7 @@ public class GameVisualizer extends JPanel {
 		double diffY = y1 - y2;
 		return Math.sqrt(diffX * diffX + diffY * diffY);
 	}
-	
+
 	public GameVisualizer() {
 		m_timer.schedule(new TimerTask() {
 			@Override
@@ -126,11 +128,11 @@ public class GameVisualizer extends JPanel {
 					if (!m_rcts.isEmpty()) {
 						BFS(currentRobot);
 					}
-				} else if (modeFlag == "remove")
+				} else if (Objects.equals(modeFlag, "remove"))
 					for (int i = 0; i < m_rcts.size(); i++) {
 						removeRectangle(e.getPoint(), m_rcts.get(i));
 					}
-				else if ((modeFlag == "create") && (e.getButton() != MouseEvent.BUTTON2))
+				else if (Objects.equals(modeFlag, "create") && (e.getButton() != MouseEvent.BUTTON2))
 					if (count == 0) {
 						x0 = e.getPoint().x;
 						y0 = e.getPoint().y;
@@ -180,8 +182,8 @@ public class GameVisualizer extends JPanel {
 			angularVelocity = -robot.getmaxAngularVelocity();
 		}
 
-		if ((robot.get_mode() == "BFS") && (!isAble(robot.getRobotX(), robot.getRobotY(), robot.getM_targetPositionX(),
-				robot.getM_targetPositionY())) && (robot.getNextPoint() != null)) {
+		if (Objects.equals(robot.get_mode(), "BFS") && (!isAble(robot.getRobotX(), robot.getRobotY(),
+				robot.getM_targetPositionX(), robot.getM_targetPositionY())) && (robot.getNextPoint() != null)) {
 
 			if ((robot.getRobotX() <= robot.getNextPoint().x + 0.5 && robot.getRobotY() <= robot.getNextPoint().y + 0.5)
 					&& (robot.getRobotX() >= robot.getNextPoint().x - 0.5
@@ -310,7 +312,7 @@ public class GameVisualizer extends JPanel {
 	}
 
 	public void removeRectangle(Point p, Rectangle rect) {
-		if(rect.isPointInRectangle(p))
+		if (rect.isPointInRectangle(p))
 			m_rctsRemove(rect);
 	}
 
